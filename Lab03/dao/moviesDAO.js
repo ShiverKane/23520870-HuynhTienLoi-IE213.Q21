@@ -1,3 +1,7 @@
+import mongodb from "mongodb";
+
+const ObjectId = mongodb.ObjectId;
+
 let movies;
 
 export default class MoviesDAO {
@@ -46,6 +50,36 @@ export default class MoviesDAO {
 
     } catch (e) {
       console.error(`Error: ${e}`);
+      throw e;
+    }
+  }
+
+  static async getMovieById(id) {
+    try {
+      const pipeline = [
+        { $match: { _id: new ObjectId(id) } },
+        {
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "movie_id",
+            as: "reviews",
+          },
+        },
+      ];
+
+      return await movies.aggregate(pipeline).next();
+    } catch (e) {
+      console.error(`Unable to get movie by id: ${e}`);
+      throw e;
+    }
+  }
+
+  static async getRatings() {
+    try {
+      return await movies.distinct("rated");
+    } catch (e) {
+      console.error(`Unable to get ratings: ${e}`);
       throw e;
     }
   }

@@ -6,4 +6,10 @@ const router = express.Router();
 router.route("/")
   .get(MoviesController.apiGetMovies);
 
+router.route("/id/:id")
+  .get(MoviesController.apiGetMovieById);
+
+router.route("/ratings")
+  .get(MoviesController.apiGetRatings);
+
 export default router;
